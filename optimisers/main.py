@@ -69,7 +69,7 @@ if __name__ == "__main__":
         "--iterations",
         type=int,
         help="The number of iterations to run the optimiser",
-        default=100,
+        default=1000,
     )
     parser.add_argument(
         "--random_seed",
@@ -88,6 +88,12 @@ if __name__ == "__main__":
         type=str,
         help="The folder containing the dataset files",
         required=True,
+    )
+    parser.add_argument(
+        "--output_folder",
+        type=str,
+        help="The folder to store the results",
+        default="results",
     )
     args = parser.parse_args()
     random_seed = args.random_seed
@@ -153,5 +159,5 @@ if __name__ == "__main__":
         print(loss, current_auc_score, current_accuracy_score)
 
         if not args.discard_results:
-            with open(f"results/{args.optimiser}-{args.random_seed}.json", "wb") as f:
+            with open(os.join({args.output_folder},f"{args.optimiser}-{args.random_seed}.json"), "wb") as f:
                 pickle.dump(data_object, f)

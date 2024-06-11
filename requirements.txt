@@ -1,4 +1,1 @@
-numpy
-EDC
-sklearn
-sympy
+pandas
