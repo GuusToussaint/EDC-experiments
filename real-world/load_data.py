@@ -4,10 +4,7 @@ from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
 import matplotlib.pyplot as plt
 
-data_folder = os.path.join("<dataset-folder>")
-
-
-def get_data(dataset):
+def get_data(dataset, data_folder):
     """Loads the data of a pre-defined list of datasets
 
     Args:
@@ -63,45 +60,41 @@ def get_data(dataset):
             Y = Y.astype(int)
             X, scaler = normalise_data(X)
         case "CREDIT":
-            X, Y, inputs = load_arff(os.path.join(data_folder, "uci-6", "credit.arff"))
+            X, Y, inputs = load_arff(os.path.join(data_folder, "real-world", "credit.arff"))
             Y = Y.astype(int)
             X, scaler = normalise_data(X)
         case "WISCONSIN":
             X, Y, inputs = load_arff(
-                os.path.join(data_folder, "uci-6", "wisconsin.arff")
+                os.path.join(data_folder, "real-world", "wisconsin.arff")
             )
             Y = Y.astype(int)
             X, scaler = normalise_data(X)
         case "DIABETES":
-            X, Y, inputs = load_arff(os.path.join(data_folder, "uci-6", "diabetes.arff"))
+            X, Y, inputs = load_arff(os.path.join(data_folder, "real-world", "diabetes.arff"))
             Y = Y.astype(int)
             X, scaler = normalise_data(X)
         case "SONAR":
-            X, Y, inputs = load_arff(os.path.join(data_folder, "uci-6", "sonar.arff"))
+            X, Y, inputs = load_arff(os.path.join(data_folder, "real-world", "sonar.arff"))
             Y = Y.astype(int)
             X, scaler = normalise_data(X)
         case "BANKNOTE":
-            X, Y, inputs = load_txt(os.path.join(data_folder, "uci-6", "data_banknote_authentication.txt"))
+            X, Y, inputs = load_txt(os.path.join(data_folder, "real-world", "data_banknote_authentication.txt"))
             Y = Y.astype(int)
             X, scaler = normalise_data(X)
         case "OCCUPANCY":
-            X, Y, inputs = load_csv(os.path.join(data_folder, "uci-6", "occupancy_detection.csv"))
-            Y = Y.astype(int)
-            X, scaler = normalise_data(X)
-        case "BANANA":
-            X, Y, inputs = load_csv(os.path.join(data_folder, "kaggle", "banana_quality.csv"))
+            X, Y, inputs = load_csv(os.path.join(data_folder, "real-world", "occupancy_detection.csv"))
             Y = Y.astype(int)
             X, scaler = normalise_data(X)
         case "HEPATITIS":
-            X, Y, inputs = load_arff(os.path.join(data_folder, "uci-6", "hepatitis.arff"))
+            X, Y, inputs = load_arff(os.path.join(data_folder, "real-world", "hepatitis.arff"))
             Y = Y.astype(int)
             X, scaler = normalise_data(X)
         case "CYLINDER":
-            X, Y, inputs = load_arff(os.path.join(data_folder, "uci-6", "cylinder-bands.arff"))
+            X, Y, inputs = load_arff(os.path.join(data_folder, "real-world", "cylinder-bands.arff"))
             Y = Y.astype(int)
             X, scaler = normalise_data(X)
         case "BREAST":
-            X, Y, inputs = load_arff(os.path.join(data_folder, "uci-6", "breast.cancer.arff"))
+            X, Y, inputs = load_arff(os.path.join(data_folder, "real-world", "breast.cancer.arff"))
             Y = Y.astype(int)
             X, scaler = normalise_data(X)
         case _:

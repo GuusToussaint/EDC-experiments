@@ -1,6 +1,7 @@
 import argparse
 import logging
 import random
+import os
 import numpy as np
 from sklearn.model_selection import KFold
 from sklearn.ensemble import RandomForestClassifier
@@ -35,6 +36,18 @@ if __name__ == "__main__":
         choices=["random_forest", "logistic_regression", "svm_linear", "svm_rbf", "decision_tree"],
     )
     parser.add_argument(
+        "--dataset_folder",
+        type=str,
+        help="The folder containing the dataset files",
+        required=True,
+    )
+    parser.add_argument(
+        "--output_folder",
+        type=str,
+        help="The folder to store the results",
+        default="comparison_results",
+    )
+    parser.add_argument(
         "--discard_results",
         action="store_true",
         help="Whether to store the results",
@@ -45,7 +58,7 @@ if __name__ == "__main__":
     random.seed(random_seed)
     logging.info(f"Random seed: {random_seed}")
 
-    X, Y, inputs, scaler = get_data(args.dataset)
+    X, Y, inputs, scaler = get_data(args.dataset, args.dataset_folder)
     logging.info(f"Evaluating on dataset {args.dataset}")
 
     match args.classifier:
@@ -107,6 +120,6 @@ if __name__ == "__main__":
         data_object["accuracy_score"].append(current_accuracy_score)
 
         if not args.discard_results:
-            with open(f"comparison_results/{args.dataset}-{args.classifier}-{args.random_seed}.json", "wb") as f:
+            with open(os.path.join(args.output_folder, f"{args.dataset}-{args.classifier}-{args.random_seed}.json"), "wb") as f:
                 pickle.dump(data_object, f)
 

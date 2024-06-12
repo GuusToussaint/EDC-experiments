@@ -1,2 +1,5 @@
 results/
 comparison_results/
+
+# pycache files
+__pycache__/
