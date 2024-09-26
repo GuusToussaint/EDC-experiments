@@ -138,7 +138,7 @@ if __name__ == "__main__":
     edc = EDC(
         building_blocks=[
             "c_*x_",
-            "c_*x_*x_",
+            # "c_*x_*x_",
             "c_*exp(c_ * x_)",
             "c_*x_**2",
         ],
@@ -147,7 +147,7 @@ if __name__ == "__main__":
         random_seed=random_seed,
         num_workers=args.num_workers,
         beam_width=10,
-        max_depth=3,
+        max_depth=4,
         iterations=1000,
         search_algorithm=args.search,
     )
@@ -211,7 +211,7 @@ if __name__ == "__main__":
             else:
                 filename = os.path.join(
                     args.output_folder,
-                    f"results/{args.dataset}-{args.search}-{args.optimiser}-{args.random_seed}.json"
+                    f"{args.dataset}-{args.search}-{args.optimiser}-{args.random_seed}.json"
                 )
             with open(f"{filename}", "wb") as f:
                 pickle.dump(data_object, f)

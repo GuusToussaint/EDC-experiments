@@ -7,6 +7,7 @@ from sklearn.model_selection import KFold
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import svm
 from sklearn.linear_model import LogisticRegression
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn import tree
 from sklearn.metrics import accuracy_score, roc_auc_score
 from load_data import get_data
@@ -33,7 +34,7 @@ if __name__ == "__main__":
         "--classifier",
         type=str,
         help="The classifier to use",
-        choices=["random_forest", "logistic_regression", "svm_linear", "svm_rbf", "decision_tree"],
+        choices=["random_forest", "logistic_regression", "svm_linear", "svm_rbf", "decision_tree", "lda"],
     )
     parser.add_argument(
         "--dataset_folder",
@@ -72,6 +73,8 @@ if __name__ == "__main__":
             classifier = svm.SVC(kernel="rbf", probability=True, random_state=random_seed)
         case "decision_tree":
             classifier = tree.DecisionTreeClassifier(random_state=random_seed)
+        case "lda":
+            classifier = LinearDiscriminantAnalysis()
         case _:
             raise ValueError("Invalid classifier")
 

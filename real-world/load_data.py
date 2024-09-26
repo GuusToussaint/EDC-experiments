@@ -97,6 +97,18 @@ def get_data(dataset, data_folder):
             X, Y, inputs = load_arff(os.path.join(data_folder, "real-world", "breast.cancer.arff"))
             Y = Y.astype(int)
             X, scaler = normalise_data(X)
+        case "KORNS-T1":
+            X, Y, inputs = load_csv(os.path.join(data_folder, "korns", "t1.csv"))
+            Y = Y.astype(int)
+            X, scaler = normalise_data(X)
+        case "KORNS-T2":
+            X, Y, inputs = load_csv(os.path.join(data_folder, "korns", "t2.csv"))
+            Y = Y.astype(int)
+            X, scaler = normalise_data(X)
+        case "KORNS-T3":
+            X, Y, inputs = load_csv(os.path.join(data_folder, "korns", "t3.csv"))
+            Y = Y.astype(int)
+            X, scaler = normalise_data(X)
         case _:
             raise ValueError("Invalid dataset")
     return X, Y, inputs, scaler
@@ -115,7 +127,7 @@ def plot_densities(X):
     plt.savefig("density.png")
 
 if __name__ == "__main__":
-    X, Y, inputs, scaler = get_data("HEPATITIS")
+    X, Y, inputs, scaler = get_data("KORNS-T1", "/data1/toussaintg1/EDC-datasets")
 
     instances = len(X)
     features = len(inputs)

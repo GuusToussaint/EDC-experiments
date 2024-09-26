@@ -3,3 +3,7 @@ comparison_results/
 
 # pycache files
 __pycache__/
+
+slurm_output/
+
+*.slurm
