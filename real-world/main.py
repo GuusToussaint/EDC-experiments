@@ -106,7 +106,7 @@ if __name__ == "__main__":
         "--output_folder",
         type=str,
         help="The folder to store the results",
-        default="comparison_results",
+        default="results",
     )
     parser.add_argument(
         "--discard_results",
@@ -138,7 +138,7 @@ if __name__ == "__main__":
     edc = EDC(
         building_blocks=[
             "c_*x_",
-            # "c_*x_*x_",
+            "c_*x_*x_",
             "c_*exp(c_ * x_)",
             "c_*x_**2",
         ],

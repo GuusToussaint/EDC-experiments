@@ -7,3 +7,5 @@ __pycache__/
 slurm_output/
 
 *.slurm
+
+slurm_comparison_output/
