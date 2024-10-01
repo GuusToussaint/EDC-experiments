@@ -50,12 +50,12 @@ def get_data(dataset, data_folder):
             Y = Y.astype(int)
             X, scaler = normalise_data(X)
         case "ADULT":
-            X, Y, inputs = load_arff(os.path.join(data_folder, "uci-6", "adult.arff"))
+            X, Y, inputs = load_arff(os.path.join(data_folder, "real-world", "adult.arff"))
             Y = Y.astype(int)
             X, scaler = normalise_data(X)
         case "IONOSPHERE":
             X, Y, inputs = load_arff(
-                os.path.join(data_folder, "uci-6", "ionosphere.arff")
+                os.path.join(data_folder, "real-world", "ionosphere.arff")
             )
             Y = Y.astype(int)
             X, scaler = normalise_data(X)
@@ -97,15 +97,15 @@ def get_data(dataset, data_folder):
             X, Y, inputs = load_arff(os.path.join(data_folder, "real-world", "breast.cancer.arff"))
             Y = Y.astype(int)
             X, scaler = normalise_data(X)
-        case "KORNS-T1":
+        case "KORNS_T1":
             X, Y, inputs = load_csv(os.path.join(data_folder, "korns", "t1.csv"))
             Y = Y.astype(int)
             X, scaler = normalise_data(X)
-        case "KORNS-T2":
+        case "KORNS_T2":
             X, Y, inputs = load_csv(os.path.join(data_folder, "korns", "t2.csv"))
             Y = Y.astype(int)
             X, scaler = normalise_data(X)
-        case "KORNS-T3":
+        case "KORNS_T3":
             X, Y, inputs = load_csv(os.path.join(data_folder, "korns", "t3.csv"))
             Y = Y.astype(int)
             X, scaler = normalise_data(X)

@@ -7,7 +7,10 @@ from sklearn.model_selection import KFold
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import svm
 from sklearn.linear_model import LogisticRegression
+from sklearn.neural_network import MLPClassifier
+from gplearn.genetic import SymbolicClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from ellyn import ellyn
 from sklearn import tree
 from sklearn.metrics import accuracy_score, roc_auc_score
 from load_data import get_data
@@ -34,7 +37,7 @@ if __name__ == "__main__":
         "--classifier",
         type=str,
         help="The classifier to use",
-        choices=["random_forest", "logistic_regression", "svm_linear", "svm_rbf", "decision_tree", "lda"],
+        choices=["random_forest", "logistic_regression", "svm_linear", "svm_rbf", "decision_tree", "lda", "M4GP", "AMAXSC", "MLP"],
     )
     parser.add_argument(
         "--dataset_folder",
@@ -75,6 +78,25 @@ if __name__ == "__main__":
             classifier = tree.DecisionTreeClassifier(random_state=random_seed)
         case "lda":
             classifier = LinearDiscriminantAnalysis()
+        case "M4GP":
+            classifier = ellyn(
+                class_m4gp=True,
+                classification=True,
+                prto_arch_on=True,
+                selection="lexicase",
+                fit_type="F1",
+                verbosity=0,
+                random_state=random_seed,
+            )
+        case "AMAXSC":
+            classifier = SymbolicClassifier(
+                parsimony_coefficient=0.01,
+                random_state=random_seed,
+            )
+        case "MLP":
+            classifier = MLPClassifier(
+                random_state=random_seed,
+            )
         case _:
             raise ValueError("Invalid classifier")
 
@@ -110,7 +132,12 @@ if __name__ == "__main__":
         current_accuracy_score = accuracy_score(Y_test, Y_hat)
         
         # Plot ROC curve
-        y_hat = classifier.predict_proba(X_test)[:, 1]
+        try:
+            y_hat = classifier.predict_proba(X_test)[:, 1]
+            auc_score = roc_auc_score(Y_test, y_hat)
+        except AttributeError:
+            y_hat = Y_hat
+            logging.warning("The classifier does not have a predict_proba method, classification as proba")
         auc_score = roc_auc_score(Y_test, y_hat)
 
         logging.info(
