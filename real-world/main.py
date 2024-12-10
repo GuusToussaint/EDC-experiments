@@ -14,7 +14,7 @@ from sklearn.metrics import roc_auc_score, roc_curve, accuracy_score
 from functools import partial
 import random
 import numpy as np
-from sklearn.model_selection import KFold
+from sklearn.model_selection import StratifiedKFold
 import matplotlib.pyplot as plt
 from load_data import get_data
 import time
@@ -148,11 +148,14 @@ if __name__ == "__main__":
         num_workers=args.num_workers,
         beam_width=10,
         max_depth=4,
+        optimisation_approach="normal",
         iterations=1000,
+        initial_iterations=100,
+        number_of_best_equations=100,
         search_algorithm=args.search,
     )
 
-    splits = KFold(n_splits=10, shuffle=True, random_state=args.random_seed)
+    splits = StratifiedKFold(n_splits=10, shuffle=True, random_state=args.random_seed)
 
     data_object = {
         "elapsed_time": [],
@@ -161,7 +164,7 @@ if __name__ == "__main__":
     }
     accuracy_scores = []
     auc_scores = []
-    for index, (train_index, test_index) in enumerate(splits.split(X)):
+    for index, (train_index, test_index) in enumerate(splits.split(X, y=Y)):
         if args.fold is not None and args.fold != index:
             continue
 

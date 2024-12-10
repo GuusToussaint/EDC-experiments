@@ -3,7 +3,7 @@ import logging
 import random
 import os
 import numpy as np
-from sklearn.model_selection import KFold
+from sklearn.model_selection import StratifiedKFold
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import svm
 from sklearn.linear_model import LogisticRegression
@@ -100,14 +100,14 @@ if __name__ == "__main__":
         case _:
             raise ValueError("Invalid classifier")
 
-    splits = KFold(n_splits=10, shuffle=True, random_state=args.random_seed)
+    splits = StratifiedKFold(n_splits=10, shuffle=True, random_state=args.random_seed)
     data_object = {
         "elapsed_time": [],
         "auc_score": [],
         "accuracy_score": []
     }
     fold = 0
-    for train_index, test_index in splits.split(X):
+    for train_index, test_index in splits.split(X, y=Y):
         fold += 1
         # Generate a new random seed
         random_seed = random.randrange(1, 2**32 - 1)

@@ -1,11 +1,10 @@
-results/
-comparison_results/
 
 # pycache files
 __pycache__/
 
-slurm_output/
 
 *.slurm
-
-slurm_comparison_output/
+slurm_*/
+results*/
+*_results/
+*_output/
