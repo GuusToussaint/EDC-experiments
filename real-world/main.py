@@ -139,19 +139,15 @@ if __name__ == "__main__":
         building_blocks=[
             "c_*x_",
             "c_*x_*x_",
-            "c_*exp(c_ * x_)",
-            "c_*x_**2",
+            "c_*exp(c_ * x_)"
         ],
         num_features=len(inputs),
         optimiser=optimiser,
         random_seed=random_seed,
         num_workers=args.num_workers,
         beam_width=10,
-        max_depth=4,
-        optimisation_approach="normal",
+        max_depth=6,
         iterations=1000,
-        initial_iterations=100,
-        number_of_best_equations=100,
         search_algorithm=args.search,
     )
 
@@ -209,12 +205,12 @@ if __name__ == "__main__":
             if args.fold is not None:
                 filename = os.path.join(
                     args.output_folder,
-                    f"{args.dataset}-{args.search}-{args.optimiser}-{args.random_seed}_{index}.json"
+                    f"{args.dataset}-{args.search}-{args.optimiser}-{args.random_seed}_{index}.pkl"
                 )
             else:
                 filename = os.path.join(
                     args.output_folder,
-                    f"{args.dataset}-{args.search}-{args.optimiser}-{args.random_seed}.json"
+                    f"{args.dataset}-{args.search}-{args.optimiser}-{args.random_seed}.pkl"
                 )
             with open(f"{filename}", "wb") as f:
                 pickle.dump(data_object, f)

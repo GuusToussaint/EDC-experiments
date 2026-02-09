@@ -45,7 +45,7 @@ def evaluate_performance_for_dataset(X, Y, inputs, random_seed, num_workers, gro
             "c_*x_",
             "c_*x_*x_",
             "c_*exp(c_ * x_)",
-            "c_*x_**2",
+            # "c_*x_**2",
         ],
         num_features=len(inputs),
         optimiser=optimiser,
