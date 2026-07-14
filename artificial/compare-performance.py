@@ -11,7 +11,9 @@ from EDC import EDC
 from EDC.optimisers import HillClimberOptimiser
 from functools import partial
 from sklearn import tree
-from ellyn import ellyn
+from pysr import PySRRegressor
+from eggp import EGGP
+# from ellyn import ellyn
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import svm
 from sklearn.linear_model import LogisticRegression
@@ -48,6 +50,11 @@ def fit_on_dataset(X, Y, clf, classifier):
             current_accuracy_score = clf.accuracy_score(X_test, Y_test)
         else:
             Y_hat = clf.predict(X_test)
+
+            # Convert Y_hat to binary predictions if it's not already
+            if len(np.unique(Y_hat)) > 2:
+                Y_hat = np.where(Y_hat >= 0.5, 1, 0)
+
             current_accuracy_score = accuracy_score(Y_test, Y_hat)
             
             # Plot ROC curve
@@ -81,7 +88,7 @@ if __name__ == "__main__":
         "--classifier",
         type=str,
         help="The classifier to use",
-        choices=["random_forest", "logistic_regression", "svm_linear", "svm_rbf", "decision_tree", "lda", "M4GP", "AMAXSC", "MLP", "EDC"],
+        choices=["random_forest", "logistic_regression", "svm_linear", "svm_rbf", "decision_tree", "lda", "M4GP", "AMAXSC", "MLP", "EDC", "PySR", "eggp"],
     )
     parser.add_argument(
         "--num_workers",
@@ -114,6 +121,18 @@ if __name__ == "__main__":
                 verbosity=0,
                 random_state=random_seed,
             )
+        case "PySR":
+            classifier = PySRRegressor(
+                niterations=100,
+                binary_operators=["+", "-", "*", "/", "pow"],
+                unary_operators=["exp", "log", "sqrt"],
+                model_selection="accuracy",
+                elementwise_loss="LogitDistLoss()",
+                procs=args.num_workers,
+                random_state=random_seed,
+            )
+        case "eggp":
+            classifier = EGGP(gen=100, nonterminals="add,sub,mul,div")
         case "AMAXSC":
             classifier = SymbolicClassifier(
                 parsimony_coefficient=0.01,

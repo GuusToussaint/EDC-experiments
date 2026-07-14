@@ -9,3 +9,7 @@ slurm_*/
 results*/
 *_results/
 *_output/
+
+outputs/
+settings.json
+*.png

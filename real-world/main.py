@@ -2,6 +2,7 @@ import argparse
 import logging
 from EDC import EDC
 from EDC.optimisers import (
+    ScipyOptimiser,
     RandomSampleOptimiser,
     GradientDecentOptimiser,
     HillClimberOptimiser,
@@ -46,6 +47,11 @@ def get_optimiser(optimiser_name):
                 fraction_random_sample=0.8307209522886011,
                 step_size=0.29811510475390257,
                 beam_width=2,
+            )
+        case "cobyqa":
+            optimiser = partial(
+                ScipyOptimiser,
+                method="cobyla",
             )
         case _:
             raise ValueError("Invalid optimiser")
@@ -138,7 +144,8 @@ if __name__ == "__main__":
     edc = EDC(
         building_blocks=[
             "c_*x_",
-            "c_*x_*x_",
+            "c_*x_^2",
+            # "c_*x_*x_",
             "c_*exp(c_ * x_)"
         ],
         num_features=len(inputs),
@@ -146,7 +153,7 @@ if __name__ == "__main__":
         random_seed=random_seed,
         num_workers=args.num_workers,
         beam_width=10,
-        max_depth=6,
+        max_depth=3,
         iterations=1000,
         search_algorithm=args.search,
     )

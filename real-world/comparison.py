@@ -10,7 +10,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.neural_network import MLPClassifier
 from gplearn.genetic import SymbolicClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from ellyn import ellyn
+from pysr import PySRRegressor
+from eggp import EGGP
+# from ellyn import ellyn
 from sklearn import tree
 from sklearn.metrics import accuracy_score, roc_auc_score
 from load_data import get_data
@@ -37,7 +39,7 @@ if __name__ == "__main__":
         "--classifier",
         type=str,
         help="The classifier to use",
-        choices=["random_forest", "logistic_regression", "svm_linear", "svm_rbf", "decision_tree", "lda", "M4GP", "AMAXSC", "MLP"],
+        choices=["random_forest", "logistic_regression", "svm_linear", "svm_rbf", "decision_tree", "lda", "M4GP", "AMAXSC", "MLP", "PySR", "eggp"],
     )
     parser.add_argument(
         "--dataset_folder",
@@ -65,40 +67,52 @@ if __name__ == "__main__":
     X, Y, inputs, scaler = get_data(args.dataset, args.dataset_folder)
     logging.info(f"Evaluating on dataset {args.dataset}")
 
-    match args.classifier:
-        case "random_forest":
-            classifier = RandomForestClassifier(random_state=random_seed)
-        case "logistic_regression":
-            classifier = LogisticRegression(random_state=random_seed)
-        case "svm_linear":
-            classifier = svm.SVC(kernel="linear", probability=True, random_state=random_seed)
-        case "svm_rbf":
-            classifier = svm.SVC(kernel="rbf", probability=True, random_state=random_seed)
-        case "decision_tree":
-            classifier = tree.DecisionTreeClassifier(random_state=random_seed)
-        case "lda":
-            classifier = LinearDiscriminantAnalysis()
-        case "M4GP":
-            classifier = ellyn(
-                class_m4gp=True,
-                classification=True,
-                prto_arch_on=True,
-                selection="lexicase",
-                fit_type="F1",
-                verbosity=0,
-                random_state=random_seed,
-            )
-        case "AMAXSC":
-            classifier = SymbolicClassifier(
-                parsimony_coefficient=0.01,
-                random_state=random_seed,
-            )
-        case "MLP":
-            classifier = MLPClassifier(
-                random_state=random_seed,
-            )
-        case _:
-            raise ValueError("Invalid classifier")
+
+    if args.classifier == "random_forest":
+        classifier = RandomForestClassifier(random_state=random_seed)
+    elif args.classifier == "logistic_regression":
+        classifier = LogisticRegression(random_state=random_seed)
+    elif args.classifier == "svm_linear":
+        classifier = svm.SVC(kernel="linear", probability=True, random_state=random_seed)
+    elif args.classifier == "svm_rbf":
+        classifier = svm.SVC(kernel="rbf", probability=True, random_state=random_seed)
+    elif args.classifier == "decision_tree":
+        classifier = tree.DecisionTreeClassifier(random_state=random_seed)
+    elif args.classifier == "lda":
+        classifier = LinearDiscriminantAnalysis()
+    elif args.classifier == "M4GP":
+        classifier = ellyn(
+            class_m4gp=True,
+            classification=True,
+            prto_arch_on=True,
+            selection="lexicase",
+            fit_type="F1",
+            verbosity=0,
+            random_state=random_seed,
+        )
+    elif args.classifier == "AMAXSC":
+        classifier = SymbolicClassifier(
+            parsimony_coefficient=0.01,
+            random_state=random_seed,
+        )
+    elif "PySR":
+        classifier = PySRRegressor(
+            niterations=100,
+            binary_operators=["+", "-", "*", "/", "pow"],
+            unary_operators=["cos", "sin", "exp", "log", "sqrt"],
+            model_selection="accuracy",
+            elementwise_loss="LogitDistLoss()",
+            random_state=random_seed,
+            verbosity=0
+        )
+    elif "eggp":
+        classifier = EGGP(gen=100, nonterminals="add,sub,mul,div")
+    elif args.classifier == "MLP":
+        classifier = MLPClassifier(
+            random_state=random_seed,
+        )
+    else:
+        raise ValueError("Invalid classifier")
 
     splits = StratifiedKFold(n_splits=10, shuffle=True, random_state=args.random_seed)
     data_object = {
@@ -129,6 +143,10 @@ if __name__ == "__main__":
         elapsed_time = end_time - start_time
 
         Y_hat = classifier.predict(X_test)
+
+        if len(np.unique(Y_hat)) > 2:
+            Y_hat = np.where(Y_hat >= 0.5, 1, 0)
+
         current_accuracy_score = accuracy_score(Y_test, Y_hat)
         
         # Plot ROC curve

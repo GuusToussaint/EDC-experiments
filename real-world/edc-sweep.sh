@@ -1,17 +1,15 @@
 
 # Create a list of datasets to evaluate
 datasets=(
-    # "ADULT"
-    # "BANKNOTE" # This is running
-    # "BREAST" # This is running
-    # "CREDIT" # This is running
-    # "CYLINDER" # This is running
-    # "DIABETES" # This is running
-    # "HEPATITIS" # This is running
-    # "IONOSPHERE" # This is running
-    # "OCCUPANCY" # This is running
-    "SONAR" # This is running
-    # "WISCONSIN" # This is running
+    "ADULT" # This takes to long
+    # "BANKNOTE"
+    # "BREAST" 
+    # "CREDIT"
+    # "CYLINDER"
+    # "DIABETES"
+    # "IONOSPHERE"
+    # "OCCUPANCY"
+    # "SONAR"
 )
 export random_seed=1805819
 

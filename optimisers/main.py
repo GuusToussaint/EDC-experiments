@@ -9,6 +9,7 @@ from EDC.util.load_data import load_csv
 from EDC.optimisers import (
     RandomSampleOptimiser,
     GradientDecentOptimiser,
+    ScipyOptimiser,
     RandomSearchOptimiser,
     SMACSearchOptimiser,
     HillClimberOptimiser,
@@ -48,6 +49,81 @@ def get_optimiser(optimiser_name):
                 fraction_random_sample=0.8307209522886011,
                 step_size=0.29811510475390257,
                 beam_width=2,
+            )
+        case "nelder_mead":
+            optimiser = partial(
+                ScipyOptimiser, 
+                method="Nelder-Mead",
+            )
+        case "powell":
+            optimiser = partial(
+                ScipyOptimiser,
+                method="Powell",
+            )
+        case "cg":
+            optimiser = partial(
+                ScipyOptimiser,
+                method="CG",
+            )
+        case "bfgs":
+            optimiser = partial(
+                ScipyOptimiser,
+                method="BFGS",
+            )
+        case "newton_cg":
+            optimiser = partial(
+                ScipyOptimiser,
+                method="Newton-CG",
+            )
+        case "l_bfgs_b":
+            optimiser = partial(
+                ScipyOptimiser,
+                method="L-BFGS-B",
+            )
+        case "tnc":
+            optimiser = partial(
+                ScipyOptimiser,
+                method="TNC",
+            )
+        case "cobyla":
+            optimiser = partial(
+                ScipyOptimiser,
+                method="COBYLA",
+            )
+        case "cobyqa":
+            optimiser = partial(
+                ScipyOptimiser,
+                method="COBYQA",
+            )
+        case "slsqp":
+            optimiser = partial(
+                ScipyOptimiser,
+                method="SLSQP",
+            )
+        case "trust_constr":
+            optimiser = partial(
+                ScipyOptimiser,
+                method="trust-constr",
+            )
+        case "dogleg":
+            optimiser = partial(
+                ScipyOptimiser,
+                method="dogleg",
+            )
+        case "trust_ncg":
+            optimiser = partial(
+                ScipyOptimiser,
+                method="trust-ncg",
+            )
+        case "trust_exact":
+            optimiser = partial(
+                ScipyOptimiser,
+                method="trust-exact",
+            )
+        case "trust_krylov":
+            optimiser = partial(
+                ScipyOptimiser,
+                method="trust-krylov",
             )
         case _:
             raise ValueError("Invalid optimiser")
@@ -159,5 +235,11 @@ if __name__ == "__main__":
         print(loss, current_auc_score, current_accuracy_score)
 
         if not args.discard_results:
-            with open(os.join({args.output_folder},f"{args.optimiser}-{args.random_seed}.json"), "wb") as f:
+            with open(
+                os.path.join(
+                    f"{args.output_folder}",
+                    f"{args.optimiser}-{args.random_seed}.pkl"
+                ),
+                "wb"
+            ) as f:
                 pickle.dump(data_object, f)
