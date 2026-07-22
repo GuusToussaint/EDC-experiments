@@ -12,6 +12,8 @@ classifier_map = {
     "AMAXSC": "AMAXSC",
     "MLP": "MLP",
     "EDC": "EDC",
+    "PySR": "PySR",
+    "eggp": "EGGP",
 }
 
 result_files = os.listdir("results")
@@ -41,4 +43,4 @@ grouped_df = grouped_df.sort_values(("mean_auc", "mean"), ascending=False)
 for classifier in grouped_df.index:
     mean_auc = grouped_df.loc[classifier, ("mean_auc", "mean")]
     std_auc = grouped_df.loc[classifier, ("mean_auc", "std")]
-    print(f"{classifier_map[classifier]}&{mean_auc:.2f}($\\pm {std_auc:.4f}$)\\\\")
+    print(f"{classifier_map[classifier]}&{mean_auc:.3f}($\\pm {std_auc:.4f}$)\\\\")

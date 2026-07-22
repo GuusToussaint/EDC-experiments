@@ -14,7 +14,7 @@ from pysr import PySRRegressor
 from eggp import EGGP
 # from ellyn import ellyn
 from sklearn import tree
-from sklearn.metrics import accuracy_score, roc_auc_score
+from sklearn.metrics import accuracy_score, roc_auc_score, roc_curve
 from load_data import get_data
 import time
 import pickle
@@ -97,16 +97,20 @@ if __name__ == "__main__":
         )
     elif "PySR":
         classifier = PySRRegressor(
-            niterations=100,
-            binary_operators=["+", "-", "*", "/", "pow"],
-            unary_operators=["cos", "sin", "exp", "log", "sqrt"],
+            niterations=10,
+            binary_operators=["+", "-", "*"],
+            unary_operators=["exp"],
             model_selection="accuracy",
             elementwise_loss="LogitDistLoss()",
-            random_state=random_seed,
-            verbosity=0
+            warm_start=False,
+            verbosity=0,
         )
     elif "eggp":
-        classifier = EGGP(gen=100, nonterminals="add,sub,mul,div")
+        classifier = EGGP(
+            gen=10,
+            nonterminals="add,sub,mul,exp",
+            loss="Bernoulli"
+        )
     elif args.classifier == "MLP":
         classifier = MLPClassifier(
             random_state=random_seed,
@@ -143,20 +147,13 @@ if __name__ == "__main__":
         elapsed_time = end_time - start_time
 
         Y_hat = classifier.predict(X_test)
+        auc_score = roc_auc_score(Y_test, Y_hat)
 
-        if len(np.unique(Y_hat)) > 2:
-            Y_hat = np.where(Y_hat >= 0.5, 1, 0)
-
-        current_accuracy_score = accuracy_score(Y_test, Y_hat)
-        
-        # Plot ROC curve
-        try:
-            y_hat = classifier.predict_proba(X_test)[:, 1]
-            auc_score = roc_auc_score(Y_test, y_hat)
-        except AttributeError:
-            y_hat = Y_hat
-            logging.warning("The classifier does not have a predict_proba method, classification as proba")
-        auc_score = roc_auc_score(Y_test, y_hat)
+        # Calculate accuracy score based on the optimal threshold
+        fpr, tpr, thresholds = roc_curve(Y_test, Y_hat)
+        threshold = thresholds[np.argmax(tpr - fpr)]
+        Y_hat_binary = (Y_hat >= threshold).astype(int)
+        current_accuracy_score = accuracy_score(Y_test, Y_hat_binary)
 
         logging.info(
             f"Baseline: {baseline:.4f}, AUC: {auc_score:.4f}, Accuracy: {current_accuracy_score:.4f}"

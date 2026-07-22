@@ -21,6 +21,7 @@ from sklearn.metrics import roc_auc_score, roc_curve, accuracy_score
 import sympy
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
+import time
 
 def normalise_data(X):
     scaler = MinMaxScaler(feature_range=(-1, 1)).fit(X)
@@ -32,6 +33,11 @@ def get_optimiser(optimiser_name):
             optimiser = partial(
                 GradientDecentOptimiser, 
                 learning_rate=1.7610811559260424,
+            )
+        case "gradient_decent_new_lr":
+            optimiser = partial(
+                GradientDecentOptimiser, 
+                learning_rate=0.01,
             )
         case "random_sample":
             optimiser = partial(RandomSampleOptimiser)
@@ -177,13 +183,17 @@ if __name__ == "__main__":
     random.seed(random_seed)
     logging.info(args)
 
+
     optimiser_partial = get_optimiser(args.optimiser)
 
     data_object = {
         "auc_score": [],
         "accuracy_score": [],
+        "function_evaluations": [],
+        "elapsed_time": [],
     }
     for dataset_file in os.listdir(args.dataset_folder):
+        start_time = time.time()
         random_seed = random.randrange(1, 2**32 - 1)
         logging.info(f"Random seed for fold: {random_seed}")
 
@@ -211,7 +221,7 @@ if __name__ == "__main__":
             seed=random_seed,
         )
 
-        loss, config = optimiser.optimise(equation, args.iterations)
+        loss, config, function_evaluations = optimiser.optimise(equation, args.iterations)
 
         # Calculate auc score and accuracy
         equation_with_best_config = equation.subs(config)
@@ -228,11 +238,17 @@ if __name__ == "__main__":
 
         current_accuracy_score = accuracy_score(Y_test, y_hat >= threshold)
         
+        end_time = time.time()
+
+        elapsed_time = end_time - start_time
         data_object["auc_score"].append(current_auc_score)
         data_object["accuracy_score"].append(current_accuracy_score)
+        data_object["function_evaluations"].append(function_evaluations)
+        data_object["elapsed_time"].append(elapsed_time)
 
         print(equation, X.shape, Y.shape)
-        print(loss, current_auc_score, current_accuracy_score)
+        print(loss, current_auc_score, current_accuracy_score, function_evaluations)
+        print(f"It took {elapsed_time:.2f} seconds to run the optimiser on {dataset_file}")
 
         if not args.discard_results:
             with open(

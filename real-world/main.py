@@ -145,7 +145,7 @@ if __name__ == "__main__":
         building_blocks=[
             "c_*x_",
             "c_*x_^2",
-            # "c_*x_*x_",
+            "c_*x_*x_",
             "c_*exp(c_ * x_)"
         ],
         num_features=len(inputs),
@@ -217,7 +217,7 @@ if __name__ == "__main__":
             else:
                 filename = os.path.join(
                     args.output_folder,
-                    f"{args.dataset}-{args.search}-{args.optimiser}-{args.random_seed}.pkl"
+                    f"{args.dataset}-{args.search}2-{args.optimiser}-{args.random_seed}.pkl"
                 )
             with open(f"{filename}", "wb") as f:
                 pickle.dump(data_object, f)

@@ -4,7 +4,7 @@ import logging
 import os
 import numpy as np
 from sklearn.model_selection import StratifiedKFold
-from sklearn.metrics import accuracy_score, roc_auc_score
+from sklearn.metrics import accuracy_score, roc_auc_score, roc_curve
 from sklearn.ensemble import RandomForestClassifier
 import pickle
 from EDC import EDC
@@ -51,20 +51,20 @@ def fit_on_dataset(X, Y, clf, classifier):
         else:
             Y_hat = clf.predict(X_test)
 
-            # Convert Y_hat to binary predictions if it's not already
-            if len(np.unique(Y_hat)) > 2:
-                Y_hat = np.where(Y_hat >= 0.5, 1, 0)
-
-            current_accuracy_score = accuracy_score(Y_test, Y_hat)
-            
-            # Plot ROC curve
+            # Get the predicted probabilities for the positive class
             try:
-                y_hat = clf.predict_proba(X_test)[:, 1]
-                auc_score = roc_auc_score(Y_test, y_hat)
+                Y_hat = clf.predict_proba(X_test)[:, 1]
             except AttributeError:
-                y_hat = Y_hat
-                logging.warning("The classifier does not have a predict_proba method, classification as proba")
-            auc_score = roc_auc_score(Y_test, y_hat)
+                pass
+            auc_score = roc_auc_score(Y_test, Y_hat)
+
+            # Calculate accuracy score based on the optimal threshold
+            fpr, tpr, thresholds = roc_curve(Y_test, Y_hat)
+            threshold = thresholds[np.argmax(tpr - fpr)]
+            Y_hat_binary = (Y_hat >= threshold).astype(int)
+            current_accuracy_score = accuracy_score(Y_test, Y_hat_binary)
+
+            
 
         logging.info(
             f"Baseline: {baseline:.4f}, AUC: {auc_score:.4f}, Accuracy: {current_accuracy_score:.4f}"
@@ -123,16 +123,21 @@ if __name__ == "__main__":
             )
         case "PySR":
             classifier = PySRRegressor(
-                niterations=100,
-                binary_operators=["+", "-", "*", "/", "pow"],
-                unary_operators=["exp", "log", "sqrt"],
+                niterations=10,
+                binary_operators=["+", "-", "*"],
+                unary_operators=["exp"],
                 model_selection="accuracy",
                 elementwise_loss="LogitDistLoss()",
                 procs=args.num_workers,
-                random_state=random_seed,
+                warm_start=False,
+                verbosity=0,
             )
         case "eggp":
-            classifier = EGGP(gen=100, nonterminals="add,sub,mul,div")
+            classifier = EGGP(
+                gen=10,
+                nonterminals="add,sub,mul,exp",
+                loss="Bernoulli"
+            )
         case "AMAXSC":
             classifier = SymbolicClassifier(
                 parsimony_coefficient=0.01,
@@ -157,7 +162,7 @@ if __name__ == "__main__":
 
     datasets = os.listdir(dataset_folder)
 
-    for dataset in datasets:
+    for indx, dataset in enumerate(datasets):
         X, Y, inputs = load_csv(os.path.join(dataset_folder, dataset))
 
         if args.classifier == "EDC":
@@ -186,3 +191,6 @@ if __name__ == "__main__":
             )
 
         fit_on_dataset(X, Y, classifier, args.classifier)
+
+        if (indx % 10) == 0:
+            logging.info(f"Processed {indx} datasets out of {len(datasets)}")
